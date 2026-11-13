@@ -1,0 +1,14 @@
+import {spawnSync} from 'node:child_process';
+import path from 'node:path';
+import {writeFileSync} from 'node:fs';
+const adb=path.join(process.env.LOCALAPPDATA,'Android','Sdk','platform-tools','adb.exe');
+const serial=process.env.ANDROID_SERIAL;
+if (!serial || !/^emulator-\d+$/.test(serial)) throw new Error('Set ANDROID_SERIAL to an isolated test emulator; physical devices are not test targets.');
+const classes=process.env.CASHA_TEST_CLASSES;
+const args=['-s',serial,'shell','am','instrument','-w','-r','-e','firebaseEmulators','true'];
+if(classes) args.push('-e','class',classes);
+args.push('com.example.casha.test/androidx.test.runner.AndroidJUnitRunner');
+const result=spawnSync(adb,args,{encoding:'utf8',timeout:900000});
+process.stdout.write(result.stdout??''); process.stderr.write(result.stderr??'');
+writeFileSync('android-test-debug.log',(result.stdout??'')+(result.stderr??''));
+process.exit(result.status===0 && /OK \(\d+ tests?\)/.test(result.stdout??'') ? 0 : 1);

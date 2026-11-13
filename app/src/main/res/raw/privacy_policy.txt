@@ -1,0 +1,31 @@
+Casha privacy policy
+Updated: 4 November 2026
+Developer: jtin
+Contact: jhustinegregorio07@gmail.com
+
+What Casha does
+Casha records loans, repayments, reversals, payday plans and wallet balances. It does not issue loans, move money or connect to your bank account. Do not enter bank passwords, PINs or authentication codes.
+
+Device records
+Budget profiles, cash entries, wallet information, receipt images, linked contact details, preferences and chat records are stored in the app's private device storage. Wallet and loan names, notes, amounts and dates are information you choose to enter. Android app isolation and an optional device-unlock screen protect access; ordinary financial records are not described as separately encrypted. Optional Gemini API keys are encrypted using Android's keystore facilities.
+
+Google sign-in and cloud synchronization
+Google sign-in uses Google and Firebase Authentication to identify your Casha account. The account can include an email address, display name, provider identifiers and a Firebase user identifier. When you enable cloud synchronization, loan agreements, party names, installment terms, payments and reversals are stored in Google Cloud Firestore under your account. Signing in does not automatically import guest records. Financial histories are retained until changed through supported audit actions or an account/data deletion request is fulfilled.
+
+Optional AI
+If you configure Gemini and give the app's consent, a request sends your command, current financial context and recent chat context to Google's Gemini service. Context can include financial amounts, due dates, transaction notes, wallet information and recent dialogue. Known loan-party names are replaced with aliases and some sensitive patterns are blocked or redacted, but these safeguards do not guarantee anonymity. Avoid entering sensitive personal information. Your configured API key authenticates requests to Google; it is not added to the financial prompt. Google's terms, privacy rules, retention practices and any applicable API charges govern its processing. AI responses are proposals and do not save financial transactions without review and confirmation.
+
+Receipts, contacts and voice
+Receipt text recognition uses the bundled on-device text-recognition library. Receipt images are not sent to Gemini as part of its financial prompt. You choose images, camera captures and contact details through the available Android tools. Voice input uses your device's chosen speech service, which may process audio under that service provider's policies. Optional notification access reads supported payment notifications on the device to prepare pending captures; a capture does not change cash records until confirmed.
+
+Service providers and technical information
+Google/Firebase, Google Play services, the text-recognition SDK and the optional Gemini service may process the account, request and technical information needed to provide their services under Google's applicable policies. Casha has no advertising feature. Network transfers to Firebase and Gemini use their secure service connections.
+
+Exports and your choices
+Portable backups contain financial and contact information in readable JSON. Protect files you export or share. Receipt image files and private API keys are not included in those backups. Device-only records, downloaded files and copies you share remain under your control. Uninstalling or clearing app storage may remove unsynced records and is not a substitute for deleting cloud records. Disabling cloud sync or signing out does not delete your account.
+
+Account and cloud data deletion
+You can request deletion through Settings > Cloud account > Request account deletion, or email jhustinegregorio07@gmail.com with the subject "Casha account and cloud data deletion request". You do not need to reinstall the app. Send the request from the Google email used for Casha and identify that account email. Do not send passwords, bank details or a copy of your ledger. jtin will verify ownership, confirm the request and explain the expected completion timing. An accepted request covers your Firebase sign-in account and associated cloud financial records; it is processed manually and is not immediate. Export anything you want to keep before requesting deletion. Local device records and backups you control are not remotely erased by that process. Any necessary retention exception and its reason will be explained when the request is handled.
+
+Support and changes
+Contact jhustinegregorio07@gmail.com for privacy questions or deletion requests. This policy may be updated when the app's data practices change; review the updated date before using new optional services.

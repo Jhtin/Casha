@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Casha</string>
+    <string name="widget_description">Log cash and expenses, and see upcoming loan payments.</string>
+</resources>

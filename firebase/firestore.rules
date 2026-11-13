@@ -1,0 +1,87 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function owner(uid) { return request.auth != null && request.auth.uid == uid; }
+    function dateTime(value) {
+      let parts = value.split('-');
+      return timestamp.date(int(parts[0]), int(parts[1]), int(parts[2]));
+    }
+    function validDate(value) {
+      return value is string && value.matches('[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        && dateTime(value).year() >= 1900 && dateTime(value).year() <= 2200
+        && dateTime(value).day() == int(value.split('-')[2]);
+    }
+    function validId(value) { return value is string && value.matches('[A-Za-z0-9_-]{1,100}'); }
+    function common(d) {
+      return d.keys().hasAll(['schemaVersion','revision','action','party','mode','total','count','firstDue','frequency','payments','reversals','paid','paymentIds','reversed'])
+        && d.keys().hasOnly(['schemaVersion','revision','action','party','mode','total','count','firstDue','frequency','payments','reversals','paid','paymentIds','reversed'])
+        && d.schemaVersion == 1 && d.schemaVersion is int && d.revision is int && d.revision > 0
+        && d.party is string && d.party.size() > 0 && d.party.size() <= 200 && d.party.matches('(?s).*\\S.*')
+        && d.mode in ['I_OWE','OWED_TO_ME'] && d.frequency in ['MONTHLY','WEEKLY','FORTNIGHTLY','SEMIMONTHLY']
+        && d.total is int && d.total > 0 && d.total <= 10000000000
+        && d.count is int && d.count >= 1 && d.count <= 120 && d.total >= d.count
+        && validDate(d.firstDue)
+        && (d.frequency != 'SEMIMONTHLY' || int(d.firstDue.split('-')[2]) == 15
+          || (dateTime(d.firstDue) + duration.value(1, 'd')).day() == 1)
+        && d.payments is list && d.payments.size() <= 500 && d.reversals is list && d.reversals.size() <= 500
+        && d.paid is map && d.paymentIds is map && d.reversed is map;
+    }
+    function createLoan(d) {
+      return d.revision == 1 && d.action == 'CREATE' && d.payments == [] && d.reversals == []
+        && d.paid == {} && d.paymentIds == {} && d.reversed == {};
+    }
+    function editLoan(d, o) {
+      return d.action == 'EDIT' && d.mode == o.mode
+        && d.diff(o).affectedKeys().hasOnly(o.payments.size() == 0
+          ? ['party','total','count','firstDue','frequency','revision','action'] : ['party','revision','action']);
+    }
+    function pay(d, o) {
+      let p = d.payments[d.payments.size()-1];
+      let key = string(p.installment);
+      let due = int(o.total / o.count) + (p.installment < o.total % o.count ? 1 : 0);
+      return d.action == 'PAYMENT'
+        && d.diff(o).affectedKeys().hasOnly(['payments','paid','paymentIds','revision','action'])
+        && d.payments == o.payments.concat([p])
+        && p.keys().hasAll(['id','installment','amount','date']) && p.keys().hasOnly(['id','installment','amount','date'])
+        && validId(p.id) && validDate(p.date) && p.installment is int && p.installment >= 0 && p.installment < o.count
+        && p.amount is int && p.amount > 0 && p.amount <= due - o.paid.get(key, 0)
+        && !o.paymentIds.get(p.id, false) && d.paymentIds.get(p.id, false) == true
+        && d.paymentIds.diff(o.paymentIds).affectedKeys().hasOnly([p.id])
+        && d.paid.get(key, 0) == o.paid.get(key, 0) + p.amount
+        && d.paid.diff(o.paid).affectedKeys().hasOnly([key]);
+    }
+    function reverse(d, o) {
+      let r = d.reversals[d.reversals.size()-1];
+      let p = o.payments[r.paymentIndex];
+      let key = string(p.installment);
+      return d.action == 'REVERSAL'
+        && d.diff(o).affectedKeys().hasOnly(['reversals','paid','reversed','revision','action'])
+        && d.reversals == o.reversals.concat([r])
+        && r.keys().hasAll(['paymentId','paymentIndex','date','reason']) && r.keys().hasOnly(['paymentId','paymentIndex','date','reason'])
+        && r.paymentIndex is int && r.paymentIndex >= 0 && r.paymentIndex < o.payments.size()
+        && r.paymentId == p.id && validDate(r.date) && dateTime(r.date) >= dateTime(p.date)
+        && r.reason is string && r.reason.size() > 0 && r.reason.size() <= 500 && r.reason.matches('(?s).*\\S.*')
+        && !o.reversed.get(r.paymentId, false) && d.reversed.get(r.paymentId, false) == true
+        && d.reversed.diff(o.reversed).affectedKeys().hasOnly([r.paymentId])
+        && d.paid.get(key, 0) == o.paid.get(key, 0) - p.amount && d.paid.get(key, 0) >= 0
+        && d.paid.diff(o.paid).affectedKeys().hasOnly([key]);
+    }
+    function removeUnpaid(d,o) {
+      return d.keys().hasAll(['schemaVersion','revision','action','deleted'])
+        && d.keys().hasOnly(['schemaVersion','revision','action','deleted'])
+        && d.schemaVersion == 1 && d.schemaVersion is int && d.revision is int
+        && d.action == 'DELETE' && d.deleted == true
+        && o.payments.size() == 0 && o.reversals.size() == 0;
+    }
+    match /users/{uid}/loans/{loanId} {
+      allow read: if owner(uid);
+      allow create: if owner(uid) && validId(loanId) && common(request.resource.data) && createLoan(request.resource.data);
+      allow update: if owner(uid) && resource.data.get('deleted',false) == false
+        && request.resource.data.revision == resource.data.revision + 1
+        && (removeUnpaid(request.resource.data,resource.data)
+          || (common(request.resource.data) && (editLoan(request.resource.data, resource.data) || pay(request.resource.data, resource.data) || reverse(request.resource.data, resource.data))));
+      allow delete: if false;
+    }
+    // No broad owner-write rule: undeclared collections and nested paths remain denied.
+  }
+}

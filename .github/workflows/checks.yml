@@ -1,0 +1,52 @@
+name: Checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    name: Android build, unit tests and lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: android-actions/setup-android@v3
+      - name: Install compile SDK
+        run: sdkmanager 'platforms;android-37.0' 'build-tools;36.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Use synthetic Firebase configuration
+        run: cp app/google-services.json.example app/google-services.json
+      - name: Verify Android project
+        run: bash ./gradlew testDebugUnitTest assembleDebug assembleDebugAndroidTest lintDebug --max-workers=2
+
+  firestore:
+    name: Firestore rules tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: firebase
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: firebase/package-lock.json
+      - run: npm ci
+      - run: npm test

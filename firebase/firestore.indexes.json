@@ -1,0 +1,10 @@
+{
+  "indexes": [],
+  "fieldOverrides": [
+    {"collectionGroup":"loans","fieldPath":"payments","indexes":[]},
+    {"collectionGroup":"loans","fieldPath":"reversals","indexes":[]},
+    {"collectionGroup":"loans","fieldPath":"paid","indexes":[]},
+    {"collectionGroup":"loans","fieldPath":"paymentIds","indexes":[]},
+    {"collectionGroup":"loans","fieldPath":"reversed","indexes":[]}
+  ]
+}

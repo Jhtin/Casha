@@ -1,0 +1,34 @@
+# Local tools and build output
+.gradle/
+.kotlin/
+.idea/
+**/build/
+local.properties
+*.iml
+.DS_Store
+node_modules/
+*.log
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Private configuration, signing and user data
+google-services.json
+*.keystore
+*.jks
+*.p12
+*.pfx
+*.dpapi
+keystore.properties
+.env
+.env.*
+!.env.example
+*service-account*.json
+*serviceAccount*.json
+.firebase/
+.firebaserc
+backups/
+exports/
+work/
+*.apk
+*.aab
