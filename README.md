@@ -17,6 +17,14 @@ Casha brings loan records, payment schedules, payday budgets, cash logging, and 
 
 Built by [Jhtin](https://github.com/Jhtin). This repository showcases the **v2.12.1 / Build 38** source and product design. It is a personal project, not a published Play Store release or a financial-advice service.
 
+## Download the Android beta
+
+**[Download Casha v2.12.1 — Build 38 APK](https://github.com/Jhtin/Casha/releases/download/v2.12.1-beta.1/Casha-v2.12.1-build38.apk)**
+
+Android **8.0 or newer** is required. Read the [release notes and checksums](https://github.com/Jhtin/Casha/releases/tag/v2.12.1-beta.1) and [installation guide](docs/INSTALLATION.md). This is a signed public beta for direct installation, with the app's Firebase configuration included in the APK. Optional AI requires your own Gemini key and consent.
+
+**Existing personal/debug installations:** this beta uses the established public release certificate and cannot update an app signed with a different key. Keep your current app and data; use a separate test device or emulator if Android reports a signing conflict. Do not uninstall your personal copy to resolve that conflict.
+
 ## Explore the app
 
 | Area | What it does |
@@ -89,4 +97,4 @@ Cloud synchronization covers loans and payment histories. Budgets, receipts, loc
 
 Assistant requests send the entered text and selected financial context to the configured provider after consent. Receipt text recognition is performed on the device. Always review proposed changes before saving. Read the in-app privacy policy for details.
 
-This is a portfolio source release, with no APK distribution or app-store publication included. Live Google sign-in, AI responses, bank notification formats, and a range of physical devices require separate verification in your own environment. Public source availability does not grant an open-source license; no license has been selected for this repository.
+This repository includes a signed public beta APK and its source; it is not an app-store publication. Live Google sign-in, AI responses, bank notification formats, and a range of physical devices require separate verification. Public source availability does not grant an open-source license; no license has been selected for this repository.
