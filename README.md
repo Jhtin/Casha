@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/badge/version-2.12.1-blue" alt="Version 2.12.1" />
 </p>
 
-![Casha project showcase](docs/images/03-developer-portfolio.png)
+[Download Android beta](#download-the-android-beta) · [Features](#explore-the-app) · [Run locally](#run-locally) · [Validation](#validate)
 
 Casha brings loan records, payment schedules, payday budgets, cash logging, and receipt review into one native Android app. Its Petot assistant adds optional conversational budgeting and transaction drafts in English or Taglish, with review before saving a proposed financial action.
 
@@ -36,6 +36,14 @@ Android **8.0 or newer** is required. Read the [release notes and checksums](htt
 | Receipt review | On-device text recognition with manual review of extracted information before saving. |
 | Personal controls | Optional app lock, reminder settings, widget privacy, companion motion/sound controls, and JSON export/restore. |
 | Cloud ledger | Opt-in Firebase Authentication and Firestore synchronization for loan/payment records with account separation and conflict review. |
+
+### App screenshot
+
+<img src="docs/images/calendar-demo-screenshot.png" width="320" alt="Casha payment calendar demo screenshot" />
+
+### Product concept gallery
+
+The following graphics are AI-generated promotional mockups. They illustrate the product concept; they are not pixel-exact screenshots of Build 38.
 
 ### Petot in the interface
 
